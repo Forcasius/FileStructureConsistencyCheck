@@ -58,8 +58,6 @@ target/
 
 
 #Eclipse Specific GitIgnore
-*.pydevproject
-.project
 .metadata
 bin/**
 tmp/**
