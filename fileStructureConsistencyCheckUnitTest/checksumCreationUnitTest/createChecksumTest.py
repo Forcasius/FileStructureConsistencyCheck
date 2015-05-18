@@ -6,6 +6,7 @@ Created on 04.05.2015
 import unittest
 
 import hashlib
+from os import unlink
 from checksumCreation.createChecksumBase import CreateChecksumBase
 
 
@@ -20,6 +21,9 @@ class FileContainer:
         with open(self.fileName1, 'wb') as myFile:
             myFile.write("I am a funny string in a more funny file")
             myFile.close()
+            
+    def __del__(self):
+        unlink(self.fileName1)
         
      
 
