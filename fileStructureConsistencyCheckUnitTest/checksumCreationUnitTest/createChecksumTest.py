@@ -36,6 +36,7 @@ class createChecksumBaseTest(unittest.TestCase):
     def test_CreateChecksum_Constructor_must_succeed(self):
         try:
             createChecksumBase = CreateChecksumBase("nothing", "stillNothing")
+            createChecksumBase.getChecksum() # dummy call to get rid of the warning...
         except:
             self.fail("createChecksumBase: an exception was thrown")
 
