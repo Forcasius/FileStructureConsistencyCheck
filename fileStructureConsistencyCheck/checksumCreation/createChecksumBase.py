@@ -27,13 +27,13 @@ class CreateChecksumBase():
         self.fileSizeInBytes = 0
         self.processedBytes = 0
         self.Logger = logging.getLogger("fileStructureConsistencycheck.checksumCreation.CreateChecksumBase")
-        self.Logger.info("__init__")
+        self.Logger.debug("enter with filePath=%s, algorithm=%s", filePath, str(algorithm))
 
         
     def calculateFileSize(self):
         fileInfo = os.stat(self.filePath)
         self.fileSizeInBytes = fileInfo.st_size
-        self.Logger.info("calculateFileSize() filePath: %s; fileSize: %g", self.filePath, self.fileSizeInBytes)
+        self.Logger.debug("filePath: %s; fileSize: %g", self.filePath, self.fileSizeInBytes)
 
     def __fileChunkGenerator(self):
         "Will get the file content chunk by chunk"
@@ -49,19 +49,22 @@ class CreateChecksumBase():
     def calculate(self):
         "Calculates the checksum and stores the hex representation in self.checksum"
         
+        self.Logger.debug("enter %s", self.filePath)
         #TODO: check if the providied algorithm is supported by hashlib ? 
         #if(isinstance(self.algorithm, (hashlib.md5(), hashlib.sha256()))):
         if True:
             self.calculateFileSize()
-            
+
             chunkGenerator = self.__fileChunkGenerator()
             for chunk in chunkGenerator:
                 self.algorithm.update(chunk)
                 self.processedBytes += sys.getsizeof(chunk)
 
             self.checksum = self.algorithm.hexdigest()
+            self.Logger.info("finished calculation with checksum %s for file %s", self.checksum, self.filePath)
+
         else:
-            self.Logger.debug("calculate() no algorithm given!")
+            self.Logger.error("no algorithm given!")
     
     def getChecksum(self):
         "Returns the calculated checksum"
