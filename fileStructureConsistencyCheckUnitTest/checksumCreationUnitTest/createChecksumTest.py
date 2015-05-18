@@ -12,24 +12,19 @@ from checksumCreation.createChecksumBase import CreateChecksumBase
 class FileContainer:
     
     def __init__(self):
-        self.filename1024 = "testfile1024.txt"
-        self.fileName2048 = "testfile2048.txt"
+        self.fileName1 = "testfile1.txt"
+        self.md5sum1 = "3c9c7fb464cba8050dd4a743b740af2b"
+        self.fileSize1 = 40
         
-    def createFile(self, filePath, fileSizeInKB = 1024):
-        pass
-    
-    def createTestFile1024(self):
-        self.createFile(self.filename1024, 1024)       
-    
-    def createTestFile2048(self):
-        self.createFile(self.filename2048, 2048)
+    def createTestFile1(self):
+        with open(self.fileName1, 'wb') as myFile:
+            myFile.write("I am a funny string in a more funny file")
+            myFile.close()
         
      
 
 class createChecksumBaseTest(unittest.TestCase):
     
-
-
     def setUp(self):
         pass
 
@@ -46,36 +41,69 @@ class createChecksumBaseTest(unittest.TestCase):
 
     def test_CreateChecksum_calculateFileSize_must_return_correct_file_size(self):
         fileContainer = FileContainer()
-        fileContainer.createTestFile1024()
+        fileContainer.createTestFile1()
         
-        createChecksumBase = CreateChecksumBase(fileContainer.filename1024, "stillNothing")
-        self.assertEqual(1024, createChecksumBase.calculateFileSize(), "File size not correct")
+        createChecksumBase = CreateChecksumBase(fileContainer.fileName1, "stillNothing")
+        createChecksumBase.calculateFileSize()
+        self.assertEqual(fileContainer.fileSize1, createChecksumBase.fileSizeInBytes)
 
     def test_CreateChecksum_calculateFileSize_must_raise_exception_if_file_not_available(self):
         createChecksumBase = CreateChecksumBase("nothing", "stillNothing")
-        self.assertRaises(Exception, createChecksumBase.calculateFileSize())
+        with self.assertRaises(OSError):
+            createChecksumBase.calculateFileSize()
         
     def test_CreateChecksum_calculate_must_raise_exception_if_file_not_available(self):
-        pass
-    
+        createChecksumBase = CreateChecksumBase("nothing", "stillNothing")
+        with self.assertRaises(Exception):
+            createChecksumBase.calculateFileSize()
+            
     def test_CreateChecksum_calculate_must_NOT_raise_exception_if_everything_is_fine(self):
-        pass
-    
+        fileContainer = FileContainer()
+        fileContainer.createTestFile1()
+        
+        try:
+            createChecksumBase = CreateChecksumBase(fileContainer.fileName1, hashlib.md5())
+            createChecksumBase.calculate()
+        except:
+            self.fail("test_CreateChecksum_calculate_must_NOT_raise_exception_if_everything_is_fine: an exception was thrown")
+            
     def test_CreateChecksum_getChecksum_must_return_empty_string_if_called_first(self):
-        pass
+        fileContainer = FileContainer()
+        fileContainer.createTestFile1()
+        
+        createChecksumBase = CreateChecksumBase(fileContainer.fileName1, hashlib.md5())
+        self.assertEqual("", createChecksumBase.getChecksum())
     
     def test_CreateChecksum_getChecksum_must_return_empty_string_if_calculate_failed(self):
-        pass
+        fileContainer = FileContainer()
+        fileContainer.createTestFile1()
+        
+        createChecksumBase = CreateChecksumBase(fileContainer.fileName1, "stillNothing")
+        self.assertEqual("", createChecksumBase.getChecksum())
     
     def test_CreateChecksum_getChecksum_must_return_the_correct_value_if_calculate_went_fine(self):
-        pass
-    
+        fileContainer = FileContainer()
+        fileContainer.createTestFile1()
+        
+        createChecksumBase = CreateChecksumBase(fileContainer.fileName1, hashlib.md5())
+        createChecksumBase.calculate()
+        self.assertEqual(fileContainer.md5sum1, createChecksumBase.getChecksum())
+                
     def test_CreateChecksum_getProgress_must_return_zero_if_called_first(self):
-        pass
+        fileContainer = FileContainer()
+        fileContainer.createTestFile1()
+        
+        createChecksumBase = CreateChecksumBase(fileContainer.fileName1, hashlib.md5())
+        self.assertEqual(0, createChecksumBase.getProgress())
 
     def test_CreateChecksum_getProgress_must_return_hundred_if_called_after_successful_creation(self):
-        pass
-    
+        fileContainer = FileContainer()
+        fileContainer.createTestFile1()
+        
+        createChecksumBase = CreateChecksumBase(fileContainer.fileName1, hashlib.md5())
+        createChecksumBase.calculate()
+        self.assertEqual(100, createChecksumBase.getProgress())
+            
     # TODO How to test if the progress is running, without threads!?
     #def test_CreateChecksum_getProgress_must_return_hundred_if_called_after_successful_creation(self):
     #    pass
