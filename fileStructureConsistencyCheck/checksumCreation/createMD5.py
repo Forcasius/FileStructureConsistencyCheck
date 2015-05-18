@@ -5,6 +5,7 @@ Created on 04.05.2015
 '''
 
 import hashlib
+import logging
 from checksumCreation.createChecksumBase import CreateChecksumBase
 
 class CreateMD5(CreateChecksumBase):
@@ -19,5 +20,7 @@ class CreateMD5(CreateChecksumBase):
         The constructor
         filePath is the full path to the file
         '''
+        self.Logger = logging.getLogger("fileStructureConsistencycheck.checksumCreation.CreateMD5")
+        self.Logger.debug("enter with filePath=%s", filePath)
         CreateChecksumBase.__init__(self, filePath, hashlib.md5())
 
